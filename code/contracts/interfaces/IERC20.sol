@@ -16,6 +16,8 @@ interface IERC20
     event Transfer(address indexed _from, address indexed _to, uint256 _amount);
     event Approve(address indexed _from, address indexed _spender, uint256 _amount);
     
-    error ERC20InsuffucuentBalance(address from, uint256 fromBalance, uint amount);
+    error ERC20InsufficientBalance(address from, uint256 fromBalance, uint amount);
+    error ERC20InsufficientAllowance(address from, uint256 fromBalance, uint amount);
     error ERC20InvalidApprover(address addr);
+    error ERC20InvalidSender(address addr);
 }

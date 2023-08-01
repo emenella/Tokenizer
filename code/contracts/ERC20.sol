@@ -50,27 +50,35 @@ contract ERC20 is IERC20
         return _balances[_owner];
     }
 
-    function transfer(address _to, uint256 _anount) external returns (bool)
+    function transfer(address _to, uint256 _amount) external returns (bool)
     {
-
+        address owner = msg.sender;
+        _transfer(owner, _to, _amount);
+        return true;
     }
 
     function transferFrom(address _from, address _to, uint256 _amount) external returns (bool)
     {
-
+        address spender = msg.sender;
+        _spendAllowance(_from, spender, _amount);
+        _transfer(_from, _to, _amount);
+        return true;
     }
 
     function approve(address _spender, uint256 _amount) external returns (bool)
     {
-
+        address owner = msg.sender;
+        _approve(owner, _spender, _amount, true);
+        emit Approve(owner, _spender, _amount);
+        return true;
     }
 
-    function allowance(address _owner, address _spender) external view returns (uint256)
+    function allowance(address _owner, address _spender) public view returns (uint256)
     {
         return _allowances[_owner][_spender];
     }
 
-    function _update(address _to, address _from, uint256 _amount) internal returns (bool)
+    function _update(address _from, address _to, uint256 _amount) internal
     {
         if (address(0) == _from)
         {
@@ -81,7 +89,7 @@ contract ERC20 is IERC20
             uint fromBalance = _balances[_from];
             if (fromBalance < _amount)
             {
-                revert ERC20InsuffucuentBalance(_from, fromBalance, _amount);
+                revert ERC20InsufficientBalance(_from, fromBalance, _amount);
             }
             unchecked {
                 // Overflow not possible: value <= fromBalance <= totalSupply.
@@ -117,6 +125,34 @@ contract ERC20 is IERC20
         {
             emit Approve(owner, spender, value);
         }
+    }
+
+    function _spendAllowance(address owner, address spender, uint256 value) internal
+    {
+        uint256 currentAllowance = allowance(owner, spender);
+        if (currentAllowance != type(uint256).max)
+        {
+            if (currentAllowance < value)
+            {
+                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+            }
+            unchecked {
+                _approve(owner, spender, currentAllowance - value, false);
+            }
+        }
+    }
+
+    function _transfer(address from, address to, uint256 value) internal
+    {
+        if (from == address(0))
+        {
+            revert ERC20InvalidSender(address(0));
+        }
+        if (to == address(0))
+        {
+            revert ERC20InvalidSender(address(0));
+        }
+        _update(from, to, value);
     }
 
 }
