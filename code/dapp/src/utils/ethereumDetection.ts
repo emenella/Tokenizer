@@ -25,9 +25,8 @@ const detectMetamask: () => boolean | undefined = () => {
 
 const getBalance: (wallets: Wallet[], provider: any) => Promise<string[]> = async (wallets: Wallet[], provider: any) => {
     const result: Promise<string>[] = [];
-    console.log(typeof(provider))
     wallets.forEach(wallet => {
-        result.push(provider.eth.getBalance(wallet.address))
+        result.push(provider.getBalance(wallet.address))
     });
     return Promise.all(result)
 }

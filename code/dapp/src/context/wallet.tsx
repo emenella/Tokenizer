@@ -1,23 +1,19 @@
 import { createContext } from "react";
+import Web3 from "web3-eth"
 
 export interface Wallet {
     address: string;
-    balance: number;
-    isConnected: boolean;
+    balance: string;
 }
 
 interface WalletContextType {
     wallets: Wallet[];
-    setWallets: (wallet: Wallet[]) => void;
-    isWalletConnected: boolean;
-    setIsWalletConnected: (isWalletConnected: boolean) => void;
+    provider: Web3 | undefined;
 }
 
 const WalletContextDefaultValues: WalletContextType = {
     wallets: [],
-    setWallets: () => {},
-    isWalletConnected: false,
-    setIsWalletConnected: () => {}
+    provider: undefined
 }
 
 export const WalletContext = createContext<WalletContextType>(WalletContextDefaultValues)
