@@ -1,19 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { WalletContext, Wallet }  from './context/wallet'
 import Web3  from 'web3-eth'
 import { detectEthereum, detectMetamask, getBalance } from './utils/ethereumDetection'
 
 
 function App() {
-
+  
   const [wallets, setWallets] = useState<Wallet[]>([])
   const [provider, setProvider] = useState<Web3 | undefined>(undefined)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [isEthereumDetected, setIsEthereumDetected] = useState(false)
   const [typeOfWallet, setTypeOfWallet] = useState("")
-
+  
+  const refresh = useCallback(async (accounts: string[]) =>
+  {
+    if (provider !== undefined)
+    {
+      if ( accounts.length > 0)
+      {
+        const wallets: Wallet[] = accounts.map((account) => { return { address: account, balance: "0"}})
+        const balance = await getBalance(wallets, provider);
+        setWallets(wallets.map((wallet, index) => { wallet.balance = balance.at(index) as string; return wallet}))
+      }
+      else {
+        setWallets([])
+        setIsWalletConnected(false)
+      }
+    }
+  }, [provider])
+  
   useEffect(() => {
-
+    
     const getInfo = async () => {
       if (provider !== undefined) {
         const wallets = (await provider.getAccounts()).map((value) => { return {address: value, balance: "0"}})
@@ -23,25 +40,14 @@ function App() {
           return value
         }))
         if (wallets.length > 0)
-          setIsWalletConnected(true)
-      }
-    }
-
-    const refresh = async (accounts: string[]) =>
-    {
-      console.log(provider)
-      if (accounts.length > 0)
-      {
-        const wallets: Wallet[] = accounts.map((account) => { return { address: account, balance: "0"}})
-        const balance = await getBalance(wallets, provider);
-        wallets.map((wallet, index) => { wallet.balance = balance.at(index) as string; return wallet})
+        setIsWalletConnected(true)
       }
     }
     
     if (provider === undefined)
-      setProvider(new Web3(window.ethereum))
-
-
+    setProvider(new Web3(window.ethereum))
+    
+    
     if (detectEthereum()) {
       setIsEthereumDetected(true)
       getInfo()
@@ -52,31 +58,26 @@ function App() {
       setIsEthereumDetected(false)
       setTypeOfWallet("no Wallet install")
     }
-  }, [provider])
-
+  }, [provider, refresh])
+  
   const connectWallet = async () => {
-    if (isEthereumDetected) {
-      try {
-        const accounts = await provider?.requestAccounts();
-        if (typeof accounts !== "undefined")
-        {
-          const wallet = accounts.map((value) => { return {address: value, balance: "0"}})
-          const balances = await getBalance(wallet, provider);
-          setWallets(wallet.map((value, index) => {
-            const balance = balances.at(index)
-            value.balance = balance as string
-            return value
-          }))
-          if (wallet.length >= 1)
-            setIsWalletConnected(true)
-        }
-      } 
-      catch (error) {
-        console.log(error)
+    if (provider && isEthereumDetected) {
+      const accounts = await provider?.requestAccounts();
+      if (typeof accounts !== "undefined")
+      {
+        const wallet = accounts.map((value) => { return {address: value, balance: "0"}})
+        const balances = await getBalance(wallet, provider);
+        setWallets(wallet.map((value, index) => {
+          const balance = balances.at(index)
+          value.balance = balance as string
+          return value
+        }))
+        if (wallet.length >= 1)
+        setIsWalletConnected(true)
       }
-    }
+    } 
   }
-
+  
   return (
     <>
       <WalletContext.Provider value={{ wallets: wallets, provider: provider }}>
@@ -91,7 +92,7 @@ function App() {
         </div>
       </WalletContext.Provider>
     </>
-  )
-}
-
-export default App
+    )
+  }
+  
+  export default App
