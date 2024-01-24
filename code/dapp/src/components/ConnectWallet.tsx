@@ -34,7 +34,5 @@ export default function ConnectWallet()
     const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
     const buttonInstall: JSX.Element = <Button> Install </Button>
 
-    console.log(provider)
-
     return provider !== undefined ? (!isConnected ? connectWalletButton : null) : buttonInstall;
 }

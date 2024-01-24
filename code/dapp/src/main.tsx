@@ -8,10 +8,10 @@ import "./global.css"
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <App>
-        <Provider>
+      <Provider>
+        <App>
           <NavBar/>
-        </Provider>
-      </App>
+        </App>
+      </Provider>
   </React.StrictMode>,
 )

@@ -52,9 +52,7 @@ export default function App(props: AppProps): JSX.Element {
       }
     }
     
-    
-    
-    if (detectEthereum()) {
+  if (detectEthereum()) {
       setIsEthereumDetected(true)
       getInfo()
       if (provider === undefined)
@@ -74,27 +72,9 @@ export default function App(props: AppProps): JSX.Element {
     }
   }, [provider, refresh, setWallets, setProvider, wallets])
   
-  const connectWallet = async () => {
-    if (provider && isEthereumDetected) {
-      const accounts = await provider?.requestAccounts();
-      if (typeof accounts !== "undefined")
-      {
-        const wallet = accounts.map((value) => { return {address: value, balance: BigInt(0)}})
-        const balances = await getBalance(wallet, provider);
-        setWallets(wallets.map((wallet, index) => {
-          const balance = balances.at(index) as bigint;
-          wallet.balance = balance
-          return wallet;
-        }))
-        if (wallet.length >= 1)
-        setIsWalletConnected(true)
-      }
-    } 
-  }
-  
   return (
     <>
     {props.children}
     </>
     )
-  }
+}
