@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback, ReactNode, useContext } from 'react'
 import { WalletContext, Wallet }  from './context/wallet'
 import Web3  from 'web3-eth'
 import { detectEthereum, detectMetamask, getBalance } from './utils/ether'
-import "./global.css"
-import { Button } from './components/ui/button'
 
 interface AppProps {
   children?: ReactNode,
@@ -94,19 +92,9 @@ export default function App(props: AppProps): JSX.Element {
     } 
   }
   
-  const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
-  
   return (
     <>
-    <h1> Welcome to Tokenizer </h1>
-    <div>
-    <p> isEthereumDetected: {isEthereumDetected ? "true" : "false"} </p>
-    <p> Type of Wallet: {typeOfWallet} </p>
-    <p> Address: {wallets.map((value, index) => { return `Wallet ${index}: ${value.address} `})} </p>
-    <p> Balance: {wallets.map((value, index) => { return `Wallet ${index}: ${Number(value.balance) / Number(10 ** 18)} `})} </p>
-    <p> isWalletConnected: {isWalletConnected ? "true" : "false"} </p>
-    { !isWalletConnected ? (connectWalletButton) : (props.children) }
-    </div>
+    {props.children}
     </>
     )
   }
