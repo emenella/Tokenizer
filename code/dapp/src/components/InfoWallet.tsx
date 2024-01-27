@@ -17,10 +17,9 @@ import {
 } from "@/components/ui/card"  
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { Wallet, WalletContext } from "@/context/wallet"
 import * as blockies from 'blockies-ts';
-import { getEnsName } from "@/utils/ens"
 
 const getShortAddress = (address: string) =>
 {
@@ -57,7 +56,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
 }
 
 
-export default function InfoWallet()
+export default function InfoWallet(): JSX.Element
 {
     const { wallets } = useContext(WalletContext)
     console.log(wallets)

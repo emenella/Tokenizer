@@ -2,8 +2,8 @@ import { Button } from "./ui/button";
 import { useState, useContext, useEffect } from "react";
 import { Wallet, WalletContext } from "@/context/wallet"
 import { getBalance } from "@/utils/ether";
-import infoWallet from "./InfoWallet";
 import { getEnsName } from "@/utils/ens";
+import InfoWallet from "./InfoWallet";
 
 export default function ConnectWallet()
 {
@@ -49,10 +49,10 @@ const getInfo = async () => {
 useEffect(() =>
 {
     getInfo()
-}, [provider])
-    
-    const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
-    const buttonInstall: JSX.Element = <Button> Install </Button>
+}, [provider, wallets])
 
-    return provider !== undefined ? (!isConnected ? connectWalletButton : infoWallet()) : buttonInstall;
+const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
+const buttonInstall: JSX.Element = <Button> Install </Button>
+
+    return provider !== undefined ? (!isConnected ? connectWalletButton : InfoWallet()) : buttonInstall;
 }
