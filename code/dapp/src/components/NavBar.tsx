@@ -8,11 +8,11 @@ import {
     NavigationMenuTrigger,
     NavigationMenuViewport,
     navigationMenuTriggerStyle
-  } from "@/components/ui/navigation-menu"
+} from "@/components/ui/navigation-menu"
 import { ModeToggle } from "./ToggleMode"
 import ConnectWallet from "./ConnectWallet"
 
-  
+
 export default function NavBar() {
     return (
         <NavigationMenu>

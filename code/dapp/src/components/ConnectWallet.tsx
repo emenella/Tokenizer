@@ -2,16 +2,13 @@ import { Button } from "./ui/button";
 import { useState, useContext, useEffect } from "react";
 import { WalletContext } from "@/context/wallet"
 import { getBalance } from "@/utils/ether";
-
-
-
-
-
+import infoWallet from "./InfoWallet";
 
 export default function ConnectWallet()
 {
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const { wallets, setWallets, provider} = useContext(WalletContext);
+
     
     const connectWallet = async () => {
         if (provider) {
@@ -26,13 +23,34 @@ export default function ConnectWallet()
                     return wallet;
                 }))
                 if (wallet.length >= 1)
-                    setIsConnected(true)
-            }
-        } 
+                setIsConnected(true)
+        }
+    } 
+}
+
+const getInfo = async () => {
+    console.log("getInfos")
+    if (provider !== undefined) {
+    const wallets = (await provider.getAccounts()).map((value) => { return {address: value, balance: BigInt(0)}})
+    const balances = await getBalance(wallets, provider)
+    setWallets(wallets.map((wallet, index) => {
+        const balance = balances.at(index) as bigint;
+        wallet.balance = balance
+        return wallet;
+    }))
+    console.log(wallets)
+    if (wallets.length > 0)
+        setIsConnected(true)
     }
+}
+
+useEffect(() =>
+{
+    getInfo()
+}, [provider])
     
     const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
     const buttonInstall: JSX.Element = <Button> Install </Button>
 
-    return provider !== undefined ? (!isConnected ? connectWalletButton : null) : buttonInstall;
+    return provider !== undefined ? (!isConnected ? connectWalletButton : infoWallet()) : buttonInstall;
 }
