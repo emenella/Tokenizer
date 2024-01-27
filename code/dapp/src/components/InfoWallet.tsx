@@ -17,15 +17,10 @@ import {
 } from "@/components/ui/card"  
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { Wallet, WalletContext } from "@/context/wallet"
 import * as blockies from 'blockies-ts';
-import { cn } from "@/lib/utils";
-
-const getAvatar = (address: string) =>
-{
-
-}
+import { getEnsName } from "@/utils/ens"
 
 const getShortAddress = (address: string) =>
 {
@@ -48,6 +43,7 @@ interface ProfileInterface
 const Profile = (props: ProfileInterface): JSX.Element => 
 {
     const imgSrc = blockies.create({ seed: props.wallet.address, size: 8, scale: 3 }).toDataURL();
+
     return (
         <Card className="w-full h-9 flex flex-cols gap-2 content-center items-center">
             <Avatar className="w-6 h-6">
@@ -55,7 +51,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
                 </AvatarImage>
                 <AvatarFallback className="text-xs">{getShortAddress(props.wallet.address)}</AvatarFallback>
             </Avatar>
-            <p>{getShortAddress(props.wallet.address)}</p>
+            <p>{props.wallet.ens !== null ? props.wallet.ens : getShortAddress(props.wallet.address)}</p>
         </Card>
     )
 }
@@ -64,6 +60,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
 export default function InfoWallet()
 {
     const { wallets } = useContext(WalletContext)
+    console.log(wallets)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger><Profile wallet={wallets[0]}/></DropdownMenuTrigger>

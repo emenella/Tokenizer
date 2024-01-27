@@ -1,8 +1,9 @@
 import { Button } from "./ui/button";
 import { useState, useContext, useEffect } from "react";
-import { WalletContext } from "@/context/wallet"
+import { Wallet, WalletContext } from "@/context/wallet"
 import { getBalance } from "@/utils/ether";
 import infoWallet from "./InfoWallet";
+import { getEnsName } from "@/utils/ens";
 
 export default function ConnectWallet()
 {
@@ -29,16 +30,17 @@ export default function ConnectWallet()
 }
 
 const getInfo = async () => {
-    console.log("getInfos")
     if (provider !== undefined) {
-    const wallets = (await provider.getAccounts()).map((value) => { return {address: value, balance: BigInt(0)}})
+    const wallets: Wallet[] = (await provider.getAccounts()).map((value) => { return {address: value, balance: BigInt(0)}})
     const balances = await getBalance(wallets, provider)
+    const ens = await getEnsName(wallets.map((value) => value.address as `0x${string}` ))
+    console.log(ens)
     setWallets(wallets.map((wallet, index) => {
         const balance = balances.at(index) as bigint;
         wallet.balance = balance
+        wallet.ens = ens[wallet.address]
         return wallet;
     }))
-    console.log(wallets)
     if (wallets.length > 0)
         setIsConnected(true)
     }
