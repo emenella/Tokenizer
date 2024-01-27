@@ -61,7 +61,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
 }
 
 
-export default function InfoWallet()
+export default function InfoWallet(): JSX.Element
 {
     const { wallets } = useContext(WalletContext)
     return (
