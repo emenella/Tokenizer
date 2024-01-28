@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { Wallet, WalletContext } from "@/context/wallet"
 import { getBalance } from "@/utils/ether";
 import { getEnsName } from "@/utils/ens";
@@ -29,7 +29,7 @@ export default function ConnectWallet()
     } 
 }
 
-const getInfo = async () => {
+const getInfo = useCallback(async () => {
     if (provider !== undefined) {
     const wallets: Wallet[] = (await provider.getAccounts()).map((value) => { return {address: value, balance: BigInt(0)}})
     const balances = await getBalance(wallets, provider)
@@ -44,12 +44,12 @@ const getInfo = async () => {
     if (wallets.length > 0)
         setIsConnected(true)
     }
-}
+}, [provider, setWallets])
 
 useEffect(() =>
 {
     getInfo()
-}, [provider, wallets])
+}, [provider, getInfo])
 
 const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
 const buttonInstall: JSX.Element = <Button> Install </Button>
