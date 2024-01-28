@@ -34,7 +34,6 @@ const getInfo = useCallback(async () => {
     const wallets: Wallet[] = (await provider.getAccounts()).map((value) => { return {address: value, balance: BigInt(0)}})
     const balances = await getBalance(wallets, provider)
     const ens = await getEnsName(wallets.map((value) => value.address as `0x${string}` ))
-    console.log(ens)
     setWallets(wallets.map((wallet, index) => {
         const balance = balances.at(index) as bigint;
         wallet.balance = balance
@@ -54,5 +53,17 @@ useEffect(() =>
 const connectWalletButton: JSX.Element = <Button onClick={connectWallet}> Connect Wallet </Button>
 const buttonInstall: JSX.Element = <Button> Install </Button>
 
-    return provider !== undefined ? (!isConnected ? connectWalletButton : InfoWallet()) : buttonInstall;
+const renderContent = () => {
+    if (provider !== undefined) {
+        if (!isConnected) {
+            return connectWalletButton;
+        } else {
+            return <InfoWallet />;
+        }
+    } else {
+        return buttonInstall;
+    }
+};
+
+    return renderContent();
 }

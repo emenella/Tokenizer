@@ -58,8 +58,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
 
 export default function InfoWallet(): JSX.Element
 {
-    const { wallets } = useContext(WalletContext)
-    console.log(wallets)
+    const { wallets } = useContext(WalletContext);
     return (
         <DropdownMenu>
             <DropdownMenuTrigger><Profile wallet={wallets[0]}/></DropdownMenuTrigger>
