@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card"  
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Wallet, WalletContext } from "@/context/wallet"
 import * as blockies from 'blockies-ts';
 
@@ -30,7 +30,6 @@ const getShortAddress = (address: string) =>
     
     const start = address.slice(0, displayLength);
     const end = address.slice(-displayLength);
-    
     return `${start}...${end}`;
 }
 
@@ -41,7 +40,14 @@ interface ProfileInterface
 
 const Profile = (props: ProfileInterface): JSX.Element => 
 {
-    const imgSrc = blockies.create({ seed: props.wallet.address, size: 8, scale: 3 }).toDataURL();
+    const [imgSrc, setImgSrc] = useState<string>("");
+    
+    useEffect(() => {
+        if (props.wallet !== undefined) {
+            const img = blockies.create({ seed: props.wallet.address.toLowerCase(), size: 8, scale: 3 }).toDataURL();
+            setImgSrc(img);
+        }
+    }, [props.wallet])
 
     return (
         <Card className="w-full h-9 flex flex-cols gap-2 content-center items-center">
@@ -50,7 +56,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
                 </AvatarImage>
                 <AvatarFallback className="text-xs">{getShortAddress(props.wallet.address)}</AvatarFallback>
             </Avatar>
-            <p>{props.wallet.ens !== null ? props.wallet.ens : getShortAddress(props.wallet.address)}</p>
+            <p>{props.wallet.ens !== undefined ? props.wallet.ens : getShortAddress(props.wallet.address.toLowerCase())}</p>
         </Card>
     )
 }
@@ -59,6 +65,20 @@ const Profile = (props: ProfileInterface): JSX.Element =>
 export default function InfoWallet(): JSX.Element
 {
     const { wallets } = useContext(WalletContext);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setIsLoading(true);
+        if (wallets.length > 0) {
+            setIsLoading(false);
+        }
+    }, [wallets]);
+
+    if (isLoading || wallets.length === 0) {
+        return (
+            <p>Loading ...</p>
+        )
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger><Profile wallet={wallets[0]}/></DropdownMenuTrigger>

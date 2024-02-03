@@ -3,7 +3,7 @@ import Web3 from "web3-eth"
 
 export interface Wallet {
     address: string;
-    ens?: string | null;
+    ens?: string | undefined;
     balance: BigInt;
 }
 

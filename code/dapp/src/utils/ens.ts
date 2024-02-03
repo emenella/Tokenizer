@@ -14,7 +14,7 @@ export async function getEnsName(address: `0x${string}`[])
         const res = await client.getName({address: addr})
         if (res !== null)
             return {name: res.name, address: addr}
-        return {name : null, address: addr}
+        return {name : undefined, address: addr}
     });
     const resolve = await Promise.all(promise)
     if (resolve.length > 0)
