@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useContext, useEffect, useState } from "react"
 import { Wallet, WalletContext } from "@/context/wallet"
 import * as blockies from 'blockies-ts';
+import { displayBalance } from "@/utils/ether"
 
 const getShortAddress = (address: string) =>
 {
@@ -57,6 +58,7 @@ const Profile = (props: ProfileInterface): JSX.Element =>
                 <AvatarFallback className="text-xs">{getShortAddress(props.wallet.address)}</AvatarFallback>
             </Avatar>
             <p>{props.wallet.ens !== undefined ? props.wallet.ens : getShortAddress(props.wallet.address.toLowerCase())}</p>
+            <p>{displayBalance(props.wallet.balance)}</p>
         </Card>
     )
 }
@@ -83,7 +85,7 @@ export default function InfoWallet(): JSX.Element
         <DropdownMenu>
             <DropdownMenuTrigger><Profile wallet={wallets[0]}/></DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>My Wallet</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>Profile</DropdownMenuItem>
                     <DropdownMenuItem>Billing</DropdownMenuItem>

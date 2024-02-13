@@ -1,4 +1,5 @@
-pragma solidity ^0.8.19;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.23;
 
 import '../ERC20.sol';
 import "../Ownership.sol";
