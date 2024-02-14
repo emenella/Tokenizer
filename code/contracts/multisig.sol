@@ -45,14 +45,15 @@ contract Multisig
         _;
     }
 
-    modifier notConfirmed(uint _txIdex)
+    modifier notConfirmed(uint _txIndex)
     {
-        require(!isConfirmed[_txIdex][msg.sender], "tx already confirm");
+        require(!isConfirmed[_txIndex][msg.sender], "tx already confirm");
+        _;
     }
 
     constructor(address[] memory _owner, uint _numConfirmationRequired)
     {
-        require(_owner.lentgh > 0, "owner is required");
+        require(_owner.length > 0, "owner is required");
         require(_numConfirmationRequired > 0 && _numConfirmationRequired <= _owner.length,"invald number of required confirmations");
 
         for (uint i = 0; i < _owner.length; i++)
@@ -93,6 +94,15 @@ contract Multisig
     function confirmTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) notConfirmed(_txIndex)
     {
         Transaction storage transaction = transactions[_txIndex];
+        transaction.numConfirmation += 1;
+        isConfirmed[_txIndex][msg.sender] = true;
+
+        emit ConfirmTransaction(msg.sender, _txIndex);
+    }
+
+    function executeTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex)
+    {
+        Transaction storage transaction = transactions[_txIndex];
 
         require(transaction.numConfirmation >= numConfirmationRequired, "cannot execute");
 
@@ -102,5 +112,39 @@ contract Multisig
         require(succes, "tx failed");
 
         emit ExecuteTransaction(msg.sender, _txIndex);
+    }
+
+    function revokeConfirmation(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex)
+    {
+        Transaction storage transaction = transactions[_txIndex];
+
+        require(isConfirmed[_txIndex][msg.sender], "tx not confirmed");
+
+        transaction.numConfirmation -= 1;
+        isConfirmed[_txIndex][msg.sender] = false;
+
+        emit RevokeConfirmation(msg.sender, _txIndex);
+    }
+
+    function getOwner() public view returns (address[] memory)
+    {
+        return owners;
+    }
+
+    function getTransaction(uint _txIndex) public view returns (address to, uint value, bytes memory data, bool executed, uint numConfirmations)
+    {
+        Transaction storage transaction = transactions[_txIndex];
+        return (
+            transaction.to,
+            transaction.value,
+            transaction.data,
+            transaction.executed,
+            transaction.numConfirmation
+        );
+    }
+
+    function getTransactionCount() public view returns (uint)
+    {
+        return transactions.length;
     }
 }
