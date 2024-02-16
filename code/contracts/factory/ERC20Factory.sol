@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: UNLICENSE
 pragma solidity ^0.8.23;
 
 import '../ERC20.sol';

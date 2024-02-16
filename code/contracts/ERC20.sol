@@ -2,9 +2,11 @@
 pragma solidity ^0.8.23;
 
 import "./interfaces/IERC20.sol";
+import "./utils/Math.sol";
+import "./Ownership.sol";
 
 
-contract ERC20 is IERC20
+contract ERC20 is IERC20, Ownership
 {
     string private _name;
     string private _symbol;
@@ -79,11 +81,23 @@ contract ERC20 is IERC20
         return _allowances[_owner][_spender];
     }
 
+    function mint(uint256 _amount) public onlyOwner
+    {
+        require(_amount != 0, "amount cannot be null");
+        _update(address(0), msg.sender, _amount);
+    }
+
+    function burn(uint256 _amount) public onlyOwner
+    {
+        require(_amount != 0, "amount cannot be null");
+        _update(msg.sender, address(0), _amount);
+    }
+
     function _update(address _from, address _to, uint256 _amount) internal
     {
         if (address(0) == _from)
         {
-            _totalSupply += _amount;
+            _totalSupply = Math.add(_totalSupply, _amount);
         }
         else
         {
@@ -100,7 +114,7 @@ contract ERC20 is IERC20
 
         if (address(0) == _to)
         {
-            _totalSupply -= _amount;
+            _totalSupply = Math.sub(_totalSupply, _amount);
         }
         else
         {
